@@ -1,0 +1,42 @@
+---
+- name: Initial Router Configuration Setup and Save Outputs
+  hosts: CSR1kv
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: Set the Hostname
+      ios_config:
+        lines:
+          - hostname CSR1kv-Router
+
+    - name: Configure Enable Secret Password
+      ios_config:
+        lines:
+          - enable secret 5 $1$vd34$PXrT7P8y4JdNXrHpRq4fE1
+
+    - name: Configure Automatic Encryption for All Passwords
+      ios_config:
+        lines:
+          - service password-encryption
+
+    - name: Create MOTD Banner
+      ios_config:
+        lines:
+          - banner motd $ Authorized Access Only! $
+
+    - name: Show Running Configuration
+      ios_command:
+        commands:
+          - show running-config
+      register: show_run
+
+    - name: Save Running Config to Startup Config
+      ios_command:
+        commands:
+          - write memory
+
+    - name: Save Output To File
+      copy:
+        content: "{{ show_run.stdout[0] }}"
+        dest: "initial_setup/running-config_{{ inventory_hostname }}.txt"

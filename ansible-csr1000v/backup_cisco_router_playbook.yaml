@@ -1,0 +1,22 @@
+---
+- name: AUTOMATIC BACKUP OF RUNNING-CONFIG
+  hosts: CSR1kv
+  gather_facts: false
+  connection: local
+
+  vars:
+    ansible_become: yes
+    ansible_become_method: enable
+    ansible_become_password: cisco123!
+
+  tasks:
+    - name: DISPLAYING THE RUNNING-CONFIG
+      ios_command:
+        commands:
+        - show running-config
+      register: config
+
+    - name: SAVE OUTPUT to ./backups/
+      copy:
+        content: "{{ config.stdout[0] }}"
+        dest: "backups/show_run_{{ inventory_hostname }}.txt"

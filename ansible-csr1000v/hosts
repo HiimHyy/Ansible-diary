@@ -1,0 +1,9 @@
+# Enter the hosts or devices for Ansible playbooks
+[routers]
+CSR1kv ansible_host=192.168.56.101 
+
+[routers:vars]
+ansible_network_os=ios
+ansible_user=cisco
+ansible_password=cisco123!
+ansible_connection=network_cli
